@@ -115,9 +115,9 @@ a-scene {
 def expand(map):
     tmp = []
     for _ in range(len(map)*2):
-        tmp.append([0]*len(map)*2)
+        tmp.append([0]*len(map[0])*2)
     for x in range(len(map)*2):
-        for y in range(len(map)*2):
+        for y in range(len(map[0])*2):
             preX, preY = floor(x/2), floor(y/2)
             tmp2 = [map[preX][preY]/2]
             if preX != 0:
@@ -126,7 +126,7 @@ def expand(map):
                 tmp2.append(map[preX+1][preY])
             if preY != 0:
                 tmp2.append(map[preX][preY-1])
-            if preY != len(map)-1:
+            if preY != len(map[0])-1:
                 tmp2.append(map[preX][preY+1])
             tmp[x][y] = (sum(tmp2) / (len(tmp2)-0.5)) + (random.random()*flux*2) - flux
             tmp[x][y] = round(tmp[x][y]*10)/10
@@ -169,7 +169,7 @@ def a_frame():
 <a-entity oculus-touch-controls='hand: right' position='0 1.60 0'><a-entity rotation="-45 0 0" position="-0.125 -0.0625 -0.0625">""")
     scale = (0.25/(w*h)**0.5)/2**reps
     for x in range(len(map)):
-        for y in range(len(map)):
+        for y in range(len(map[0])):
             cell = map[x][y]
             print("<a-box scale='{scale} {height} {scale}' position='{x} {value} {y}' rotation='0 0 0' color='#{r}55{b}'></a-box>".format(
                 r=hexify(abs(min(cell*mult_neg, 0))), b=hexify(max(cell*mult_pos, 0)), value=cell*(scale), x=x*scale, y=y*scale, scale=scale, height=scale/3
