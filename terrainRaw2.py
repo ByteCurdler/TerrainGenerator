@@ -1,6 +1,10 @@
 import random
 from math import floor
-
+if "seed" in _GET:
+    seed = float(_GET["seed"])
+else:
+    seed = random.random() * 99999
+random.seed(seed)
 if "reps" in _GET:
     reps = int(_GET["reps"])
 else:
@@ -50,16 +54,16 @@ def expand(map):
     for x in range(len(map)*2):
         for y in range(len(map[0])*2):
             preX, preY = floor(x/2), floor(y/2)
-            tmp2 = [map[preX][preY]/2]
-            if preX != 0:
+            tmp2 = [map[preX][preY]]
+            if preX != 0 and x % 2 == 0:
                 tmp2.append(map[preX-1][preY])
-            if preX != len(map)-1:
+            if preX != len(map)-1 and x % 2 == 1:
                 tmp2.append(map[preX+1][preY])
-            if preY != 0:
+            if preY != 0 and y % 2 == 0:
                 tmp2.append(map[preX][preY-1])
-            if preY != len(map[0])-1:
+            if preY != len(map[0])-1 and y % 2 == 1:
                 tmp2.append(map[preX][preY+1])
-            tmp[x][y] = (sum(tmp2) / (len(tmp2)-0.5)) + (random.random()*flux*2) - flux
+            tmp[x][y] = (sum(tmp2) / (len(tmp2))) + (random.random()*flux*2) - flux
             tmp[x][y] = round(tmp[x][y]*10)/10
     return tmp
 
@@ -94,16 +98,21 @@ def a_frame():
         mult_neg = 255 / max([max([max(-j, 0) for j in i]) for i in map])
     except ZeroDivisionError:
         mult_neg = 0
+    scale = (0.25/(w*h)**0.5)/2**reps
     print("""<a-scene embedded>
 <a-sky src='360-palace.jpg'></a-sky>
-<a-plane position='0 0 0' color='#a67328' width=4 height=4 rotation="-90 0 0"></a-plane>
-<a-entity oculus-touch-controls='hand: right' position='0 1.60 0'><a-entity rotation="-45 0 0" position="-0.125 -0.0625 -0.0625">""")
-    scale = (0.25/(w*h)**0.5)/2**reps
+""") #<a-plane position='0 0 0' color='#a67328' width=4 height=4 rotation="-90 0 0"></a-plane>
+    #<a-entity oculus-touch-controls='hand: right' position='0 1.60 0'><a-entity rotation="-45 0 0" position="-0.125 -0.0625 -0.0625">""")
+    print("<a-entity scale='80 80 80' position='-10 %s -10'>" % -(rnge*scale+rnge/10))
     for x in range(len(map)):
         for y in range(len(map[0])):
             cell = map[x][y]
-            print("<a-box scale='{scale} {height} {scale}' position='{x} {value} {y}' rotation='0 0 0' color='#{neg}{pos}00'></a-box>".format(
-                neg=hexify(abs(min(cell*mult_neg, 0))), pos=hexify(max(cell*mult_pos, 0)), value=cell*(scale), x=x*scale, y=y*scale, scale=scale, height=scale/3
+            print("<a-box scale='{scale} {height} {scale}' position='{x} {value} {y}' rotation='0 0 0' color='#{zero}{pos}{neg}'></a-box>".format(
+                zero=hexify(min(255-abs(min(cell*mult_neg, 0)), 255-max(cell*mult_pos, 0))/10),
+                neg=hexify(abs(min(cell*mult_neg, 0))),
+                pos=hexify(max(cell*mult_pos, 0)),
+                value=cell*(scale),
+                x=x*scale, y=y*scale, scale=scale, height=scale*0.1*rnge
             ))
 ##    print("</a-entity></a-entity><a-entity position='0 1.6 -4' rotation='20 0 0'>")
 ##    scale = 1/2**reps
@@ -118,3 +127,4 @@ for i in range(reps):
     map = expand(map)
 disp()
 a_frame()
+print("The seed is %s." % seed)
