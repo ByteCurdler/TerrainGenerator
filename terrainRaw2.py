@@ -102,8 +102,8 @@ def a_frame():
     for x in range(len(map)):
         for y in range(len(map[0])):
             cell = map[x][y]
-            print("<a-box scale='{scale} {height} {scale}' position='{x} {value} {y}' rotation='0 0 0' color='#{r}55{b}'></a-box>".format(
-                r=hexify(abs(min(cell*mult_neg, 0))), b=hexify(max(cell*mult_pos, 0)), value=cell*(scale), x=x*scale, y=y*scale, scale=scale, height=scale/3
+            print("<a-box scale='{scale} {height} {scale}' position='{x} {value} {y}' rotation='0 0 0' color='#{neg}{pos}00'></a-box>".format(
+                neg=hexify(abs(min(cell*mult_neg, 0))), pos=hexify(max(cell*mult_pos, 0)), value=cell*(scale), x=x*scale, y=y*scale, scale=scale, height=scale/3
             ))
 ##    print("</a-entity></a-entity><a-entity position='0 1.6 -4' rotation='20 0 0'>")
 ##    scale = 1/2**reps
